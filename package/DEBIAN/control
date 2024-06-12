@@ -1,4 +1,5 @@
 Package: coinflip
+Version: 1.0
 Architecture: all
 Priority: optional
 Description: adds a coinflip command which has a 50% chance of printing "heads" and 50% chance of printing "tails"
