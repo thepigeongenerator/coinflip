@@ -33,8 +33,8 @@ int main(int argc, char** argv) {
 	// if we have input; perform coin flips for those times
 	for (uint32_t i = 1; i < argc; ++i) {
 		int n = 0;           // contains the random data
-		uint32_t headsc = 0; // amount of heads
-		uint32_t tailsc = 0; // amount of tails
+		uint64_t headsc = 0; // amount of heads
+		uint64_t tailsc = 0; // amount of tails
 
 		// get the integer from the string, return 1 if an error occurred
 		errno = 0;
@@ -50,6 +50,6 @@ int main(int argc, char** argv) {
 		}
 
 		// print the results of this cycle
-		printf("results:\n heads: %u\n tails: %u\n", headsc, tailsc);
+		printf("results:\n heads: %lu\n tails: %lu\n", headsc, tailsc);
 	}
 }
