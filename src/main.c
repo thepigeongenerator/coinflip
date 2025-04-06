@@ -1,11 +1,12 @@
 #include <errno.h>
+#include <linux/time.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
 int main(int argc, char** argv) {
-	// set thr seed to the number of seconds xor-ed with nanoseconds
+	// set the seed to the number of seconds xor with nanoseconds
 	{
 		struct timespec ts;
 		clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -18,11 +19,11 @@ int main(int argc, char** argv) {
 		return 0;
 	}
 
-	// if we have input; perform coinflips for those times
+	// if we have input; perform coin flips for those times
 	for (uint32_t i = 1; i < argc; ++i) {
-		int n = 0;
-		uint32_t headsc = 0;
-		uint32_t tailsc = 0;
+		int n = 0;           // contains the random data
+		uint32_t headsc = 0; // amount of heads
+		uint32_t tailsc = 0; // amount of tails
 
 		// get the integer from the string, return 1 if an error occurred
 		errno = 0;
@@ -32,14 +33,14 @@ int main(int argc, char** argv) {
 			return 1;
 		}
 
-		// perform for the inputted count
+		// perform for the input count
 		for (long j = 0; j < c; ++j) {
-			if (n == 0) n = rand();
+			if (n == 0) n = rand();                // get a new random number if the random data ran out
 			(void)((n & 1) ? headsc++ : tailsc++); // increment the correct counter
 			n >>= 1;                               // shift the random integer right by 1
 		}
 
-		// print the results
+		// print the results of this cycle
 		printf("results:\n heads: %u\n tails: %u\n", headsc, tailsc);
 	}
 }
