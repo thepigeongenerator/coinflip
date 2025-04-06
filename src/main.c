@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <limits.h>
 #include <linux/time.h>
 #include <stdarg.h>
 #include <stdint.h>
@@ -39,6 +40,7 @@ int main(int argc, char** argv) {
 		errno = 0;
 		long const c = strtol(argv[i], NULL, 10);
 		if (errno == EINVAL) error("syntax error for string: %s\n", argv[i]);
+		if (c < 1 || c > (LONG_MAX - 1)) error("count may only be in between 1 and %l. Received %l", LONG_MAX, c);
 
 		// perform for the input count
 		for (long j = 0; j < c; ++j) {
