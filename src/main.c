@@ -1,9 +1,19 @@
 #include <errno.h>
 #include <linux/time.h>
+#include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdnoreturn.h>
 #include <time.h>
+
+noreturn static inline void error(char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	vfprintf(stderr, fmt, args);
+	va_end(args);
+	exit(1);
+}
 
 int main(int argc, char** argv) {
 	// set the seed to the number of seconds xor with nanoseconds
@@ -27,11 +37,8 @@ int main(int argc, char** argv) {
 
 		// get the integer from the string, return 1 if an error occurred
 		errno = 0;
-		long c = strtol(argv[i], NULL, 10);
-		if (errno == EINVAL) {
-			fprintf(stderr, "syntax error for string: %s\n", argv[i]);
-			return 1;
-		}
+		long const c = strtol(argv[i], NULL, 10);
+		if (errno == EINVAL) error("syntax error for string: %s\n", argv[i]);
 
 		// perform for the input count
 		for (long j = 0; j < c; ++j) {
