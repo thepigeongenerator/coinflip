@@ -20,9 +20,13 @@ obj/%.o: src/%.c
 	@mkdir -p $(@D)
 	$(CC) -c -MD -MP $(CFLAGS) -o $@ $<
 
+ifneq ($(shell which bear),)
 compile_commands.json: makefile
 	$(MAKE) clean
 	@touch compile_commands.json
 	bear -- make compile
+else
+compile_commands.json:
+endif
 
 -include $(OBJ:.o=.d)
