@@ -1,4 +1,4 @@
-CC      := x86_64-pc-linux-gnu-gcc
+CC      := x86_64-linux-gnu-gcc
 CFLAGS  := -Wall -Wextra -Wpedantic -O2 -std=gnu17
 LDFLAGS :=
 
