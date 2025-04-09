@@ -1,12 +1,14 @@
-#include <errno.h>
-#include <limits.h>
-#include <linux/time.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdnoreturn.h>
-#include <time.h>
+#include <features.h>
+#if _POSIX_C_SOURCE >= 199309L
+# include <bits/time.h>
+# include <errno.h>
+# include <limits.h>
+# include <stdarg.h>
+# include <stdint.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <stdnoreturn.h>
+# include <time.h>
 
 noreturn static inline void error(char* fmt, ...) {
 	va_list args;
@@ -31,7 +33,7 @@ int main(int argc, char** argv) {
 	}
 
 	// if we have input; perform coin flips for those times
-	for (uint32_t i = 1; i < argc; ++i) {
+	for (uint32_t i = 1; i < (unsigned)argc; ++i) {
 		int n = 0;           // contains the random data
 		uint64_t headsc = 0; // amount of heads
 		uint64_t tailsc = 0; // amount of tails
@@ -53,3 +55,6 @@ int main(int argc, char** argv) {
 		printf("results:\n heads: %lu\n tails: %lu\n", headsc, tailsc);
 	}
 }
+#else
+# error "platform unsupported"
+#endif
