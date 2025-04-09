@@ -2,10 +2,10 @@ name: validate
 on:
   pull_request:
     branches:
-      - $default-branch
+      - '**'
   push:
     branches:
-      - $default-branch
+      - '**'
 jobs:
   compile:
     runs-on: ubuntu-latest
