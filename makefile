@@ -1,6 +1,6 @@
-CC      := x86_64-linux-gnu-gcc
-CFLAGS  := -Wall -Wextra -Wpedantic -O2 -std=gnu17
-LDFLAGS :=
+CC      ?= cc
+CFLAGS  += -Wall -Wextra -Wpedantic -O2 -MD -MP -std=gnu99
+LDFLAGS +=
 
 SRC = $(shell find src/ -name '*.c')
 OBJ := $(patsubst src/%,obj/%,$(SRC:.c=.o))
@@ -18,7 +18,7 @@ $(BIN): $(OBJ)
 # compile .o files (w/ .d files)
 obj/%.o: src/%.c
 	@mkdir -p $(@D)
-	$(CC) -c -MD -MP $(CFLAGS) -o $@ $<
+	$(CC) -c $(CFLAGS) -o $@ $<
 
 ifneq ($(shell which bear),)
 compile_commands.json: makefile
