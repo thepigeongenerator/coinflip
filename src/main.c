@@ -23,9 +23,8 @@ typedef struct dynrdat {
 dynrdat* rdat = NULL;
 
 static inline ull pow2_ceil(ull x) {
-	x -= !!x;                        // if x=0, remains 0; else x -= 1
-	int lz = __builtin_clzll(x | 1); // get leading zeroes
-	return (~0ULL >> lz) + 1;        // bit-shift the maximum value by this amount of leading zeroes
+	x -= !!x; // if x=0, remains 0; else x -= 1
+	return 1ULL << ((sizeof(ull) * 8) - __builtin_clzll(x | 1));
 }
 
 static void quit(void) {
