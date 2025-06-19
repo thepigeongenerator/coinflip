@@ -7,10 +7,10 @@
 #include <sys/types.h>
 #include <time.h>
 
-#define error(ret, s, ...)                   \
-	do {                                     \
-		fprintf(stderr, (s), ##__VA_ARGS__); \
-		exit(ret);                           \
+#define error(ret, s, ...)                             \
+	do {                                               \
+		fprintf(stderr, (s)__VA_OPT__(, __VA_ARGS__)); \
+		exit(ret);                                     \
 	} while (0)
 
 typedef unsigned long long ull;
