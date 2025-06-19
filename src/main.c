@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdint.h>
@@ -14,10 +15,22 @@
 
 typedef unsigned long long ull;
 
+typedef struct dynrdat {
+	size_t cap;
+	ull dat[];
+} dynrdat;
+
+static inline ull pow2_ceil(ull x) {
+	x -= !!x;                        // if x=0, remains 0; else x -= 1
+	int lz = __builtin_clzll(x | 1); // get leading zeroes
+	return (~0ULL >> lz) + 1;        // bit-shift the maximum value by this amount of leading zeroes
+}
 
 int main(int argc, char** argv) {
 	// return the result if no input
 	if (argc <= 1) return printf("%s\n", (rand() & 1) ? "heads" : "tails");
+
+	dynrdat* rdat = NULL;
 
 	// loop through arguments
 	for (unsigned i = 1; i < (unsigned)argc; ++i) {
@@ -26,24 +39,42 @@ int main(int argc, char** argv) {
 		ull c = strtoull(argv[i], NULL, 10);
 		if (errno != 0) error(errno, "parse error for string: '%s'\n", argv[i]);
 
+		// acquire random data (compiler will optimize MOD and DIV away since they're both base-2 constant values)
+		ull mod = c % (sizeof(ull) * 8); // get the remainder of the available random bits
+		c = c / (sizeof(ull) * 8);       // compute our "word count"
+
+		// dynamically scale the array to our needs, ensuring 2^n scaling
+		size_t cap = pow2_ceil(c + !!mod);
+		if (!rdat || rdat->cap < cap) {
+			void* ptr = realloc(rdat, sizeof(dynrdat) + sizeof(ull) * cap);
+			if (!ptr) {
+				free(rdat);
+				error(1, "insufficient memory\n", );
+			}
+
+			rdat = ptr;
+			rdat->cap = cap;
+		}
+
+		// populate the array with random data
+		getrandom(rdat->dat, c + !!mod, 0);
+
 		// perform for the input count
 		ull headsc = 0; // amount of heads
 		ull tailsc = 0; // amount of tails
 
-		while (c >= (sizeof(ull) * 8)) {
-			c -= (sizeof(ull) * 8);
-			ull n;
-			getrandom(&n, sizeof(ull), GRND_INSECURE);
-			int cnt = __builtin_popcountll(n); // counts the set bits
+		// loop through how many full words there are available
+		ull* n = rdat->dat; // initialize the pointer to the start of our random data
+		for (; n < (rdat->dat + c); n++) {
+			int cnt = __builtin_popcountll(*n); // counts the set bits
 			headsc += cnt;
-			tailsc += 31 - cnt;
+			tailsc += sizeof(ull) * 8 - cnt;
 		}
 
-		if (c > 0) {
-			long n;
-			getrandom(&n, sizeof(ull), GRND_INSECURE);
-			long msk = (1 << c) - 1;
-			int cnt = __builtin_popcountll(n & msk);
+		// if there is a remainder, use the last N to get this
+		if (mod) {
+			ull msk = (1 << mod) - 1; // get a mask with the set word size
+			int cnt = __builtin_popcountll(*n & msk);
 			headsc += cnt;
 			tailsc += c - cnt;
 		}
@@ -51,5 +82,8 @@ int main(int argc, char** argv) {
 		// print the results of this cycle
 		printf("results:\n heads: %llu\n tails: %llu\n", headsc, tailsc);
 	}
+
+	free(rdat);
+
 	return 0;
 }
