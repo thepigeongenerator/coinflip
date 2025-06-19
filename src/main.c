@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
 			ull msk = (1 << mod) - 1; // get a mask with the set word size
 			int cnt = __builtin_popcountll(*n & msk);
 			headsc += cnt;
-			tailsc += c - cnt;
+			tailsc += mod - cnt;
 		}
 
 		// print the results of this cycle
