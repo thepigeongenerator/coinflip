@@ -57,7 +57,8 @@ int main(int argc, char** argv) {
 		}
 
 		// populate the array with random data
-		getrandom(rdat->dat, c + !!mod, 0);
+		if (getrandom(rdat->dat, c + !!mod, 0) < 0)
+			error(1, "failed to acquire random data!\n", );
 
 		// perform for the input count
 		ull headsc = 0; // amount of heads
