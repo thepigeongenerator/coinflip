@@ -13,6 +13,8 @@
 		exit(ret);                                     \
 	} while (0)
 
+#define WIDTHOF(x) (sizeof(x) * 8)
+
 typedef unsigned long long ull;
 
 typedef struct dynrdat {
@@ -24,7 +26,7 @@ dynrdat* rdat = NULL;
 
 static inline ull pow2_ceil(ull x) {
 	x -= !!x; // if x=0, remains 0; else x -= 1
-	return 1ULL << ((sizeof(ull) * 8) - __builtin_clzll(x | 1));
+	return 1ULL << (WIDTHOF(ull) - __builtin_clzll(x | 1));
 }
 
 static void quit(void) {
@@ -44,8 +46,8 @@ int main(int argc, char** argv) {
 		if (errno != 0) error(errno, "parse error for string: '%s'\n", argv[i]);
 
 		// acquire random data (compiler will optimize MOD and DIV away since they're both base-2 constant values)
-		int mod = c % (sizeof(ull) * 8); // get the remainder of the available random bits
-		c = c / (sizeof(ull) * 8);       // compute our "word count"
+		int mod = c % WIDTHOF(ull); // get the remainder of the available random bits
+		c = c / WIDTHOF(ull);       // compute our "word count"
 
 		// dynamically scale the array to our needs, ensuring 2^n scaling
 		size_t cap = pow2_ceil(c + !!mod);
@@ -70,7 +72,7 @@ int main(int argc, char** argv) {
 		for (; n < (rdat->dat + c); n++) {
 			int cnt = __builtin_popcountll(*n); // counts the set bits
 			headsc += cnt;
-			tailsc += sizeof(ull) * 8 - cnt;
+			tailsc += WIDTHOF(ull) - cnt;
 		}
 
 		// if there is a remainder, use the last N to get this
