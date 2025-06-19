@@ -1,5 +1,5 @@
 CC      ?= cc
-CFLAGS  += -Wall -Wextra -Wpedantic -O3 -MD -MP -std=gnu99
+CFLAGS  += -Wall -Wextra -Wpedantic -O3 -MD -MP -std=gnu99 -DNDEBUG
 LDFLAGS +=
 
 SRC = $(shell find src/ -name '*.c')
