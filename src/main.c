@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 		if (errno != 0) error(errno, "parse error for string: '%s'\n", argv[i]);
 
 		// acquire random data (compiler will optimize MOD and DIV away since they're both base-2 constant values)
-		ull mod = c % (sizeof(ull) * 8); // get the remainder of the available random bits
+		int mod = c % (sizeof(ull) * 8); // get the remainder of the available random bits
 		c = c / (sizeof(ull) * 8);       // compute our "word count"
 
 		// dynamically scale the array to our needs, ensuring 2^n scaling
