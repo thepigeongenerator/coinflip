@@ -28,7 +28,7 @@ static inline ull pow2_ceil(ull x) {
 
 int main(int argc, char** argv) {
 	// return the result if no input
-	if (argc <= 1) return printf("%s\n", (rand() & 1) ? "heads" : "tails");
+	if (argc <= 1) return printf("%s\n", (clock() & 1) ? "heads" : "tails");
 
 	dynrdat* rdat = NULL;
 
