@@ -20,17 +20,22 @@ typedef struct dynrdat {
 	ull dat[];
 } dynrdat;
 
+dynrdat* rdat = NULL;
+
 static inline ull pow2_ceil(ull x) {
 	x -= !!x;                        // if x=0, remains 0; else x -= 1
 	int lz = __builtin_clzll(x | 1); // get leading zeroes
 	return (~0ULL >> lz) + 1;        // bit-shift the maximum value by this amount of leading zeroes
 }
 
+static void quit(void) {
+	free(rdat);
+}
+
 int main(int argc, char** argv) {
 	// return the result if no input
 	if (argc <= 1) return printf("%s\n", (clock() & 1) ? "heads" : "tails");
-
-	dynrdat* rdat = NULL;
+	atexit(quit);
 
 	// loop through arguments
 	for (unsigned i = 1; i < (unsigned)argc; ++i) {
@@ -47,10 +52,7 @@ int main(int argc, char** argv) {
 		size_t cap = pow2_ceil(c + !!mod);
 		if (!rdat || rdat->cap < cap) {
 			void* ptr = realloc(rdat, sizeof(dynrdat) + sizeof(ull) * cap);
-			if (!ptr) {
-				free(rdat);
-				error(1, "insufficient memory\n", );
-			}
+			if (!ptr) error(1, "insufficient memory\n", );
 
 			rdat = ptr;
 			rdat->cap = cap;
@@ -83,8 +85,6 @@ int main(int argc, char** argv) {
 		// print the results of this cycle
 		printf("results:\n heads: %llu\n tails: %llu\n", headsc, tailsc);
 	}
-
-	free(rdat);
 
 	return 0;
 }
